@@ -2,7 +2,7 @@ name: discord-auth
 version: '1.0'
 main: app.ask4fusora.mc.discordAuth.DiscordAuth
 api-version: '1.21'
-prefix: [discord-auth]
+prefix: discord-auth
 load: STARTUP
 authors: [ask4fusora]
 description: Papermc server authentication plugin with Discord.
