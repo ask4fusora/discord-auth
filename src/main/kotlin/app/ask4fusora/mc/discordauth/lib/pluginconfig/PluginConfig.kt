@@ -3,6 +3,7 @@ package app.ask4fusora.mc.discordauth.lib.pluginconfig
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.io.IOException
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -16,7 +17,16 @@ abstract class PluginConfig<P : JavaPlugin>(
     private var config: YamlConfiguration
 
     init {
+        makeFile()
+        config = load()
+    }
+
+    private fun makeFolder() {
         if (!plugin.dataFolder.exists()) plugin.dataFolder.mkdirs()
+    }
+
+    private fun makeFile() {
+        makeFolder()
 
         if (!file.exists()) {
             if (plugin.getResource(fileName) != null) {
@@ -25,25 +35,30 @@ abstract class PluginConfig<P : JavaPlugin>(
                 file.createNewFile()
             }
         }
-
-        config = YamlConfiguration.loadConfiguration(file)
     }
 
-    fun save(path: String? = null) {
-        try {
-            config.save(file)
-        } catch (e: Exception) {
-            plugin.logger.severe("Could not save config file '$fileName'!")
+    private fun deleteFile() {
+        if (!file.exists()) return
 
-            if (path != null)
-                plugin.logger.severe("Failed to auto-save setting '$path'!")
-
-            e.printStackTrace()
-        }
+        if (file.delete())
+            plugin.logger.warning("Deleted configuration file '$fileName'.")
+        else
+            plugin.logger.severe("Failed to delete config file '$fileName'!")
     }
 
-    fun reload() {
+    fun reset() {
+        deleteFile()
+        makeFile()
+        load()
+    }
+
+    /**
+     * Return an instance of the config.
+     * Can be used to reload configuration.
+     */
+    fun load(): YamlConfiguration {
         config = YamlConfiguration.loadConfiguration(file)
+        return config
     }
 
     protected inline fun <reified T> setting(default: T, group: String = "", path: String? = null): ConfigDelegate<T> {
@@ -75,7 +90,15 @@ abstract class PluginConfig<P : JavaPlugin>(
 
         override fun setValue(thisRef: PluginConfig<*>, property: KProperty<*>, value: T) {
             thisRef.config.set(getPath(path, property.name), value)
-            thisRef.save(path)
+
+            try {
+                thisRef.config.save(thisRef.file)
+            } catch (e: IOException) {
+                thisRef.plugin.logger.severe("Could not save config file '${thisRef.fileName}'!")
+                thisRef.plugin.logger.severe("Failed to save setting '$path'!")
+
+                e.printStackTrace()
+            }
         }
 
         private fun getPath(path: String?, propertyName: String): String {
