@@ -17,6 +17,7 @@ abstract class PluginConfig<P : JavaPlugin>(
     private var config: YamlConfiguration
 
     init {
+        makeFolder()
         makeFile()
         config = load()
     }
@@ -26,14 +27,12 @@ abstract class PluginConfig<P : JavaPlugin>(
     }
 
     private fun makeFile() {
-        makeFolder()
+        if (!file.exists()) return
 
-        if (!file.exists()) {
-            if (plugin.getResource(fileName) != null) {
-                plugin.saveResource(fileName, false)
-            } else {
-                file.createNewFile()
-            }
+        if (plugin.getResource(fileName) != null) {
+            plugin.saveResource(fileName, false)
+        } else {
+            file.createNewFile()
         }
     }
 
