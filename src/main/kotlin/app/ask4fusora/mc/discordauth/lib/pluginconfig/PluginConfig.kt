@@ -50,7 +50,12 @@ abstract class PluginConfig<P : JavaPlugin>(
         return createDelegate(default, group, path, T::class.java)
     }
 
-    protected fun <T> createDelegate(default: T, group: String, path: String? = null, type: Class<T>): ConfigDelegate<T> {
+    protected fun <T> createDelegate(
+        default: T,
+        group: String,
+        path: String? = null,
+        type: Class<T>
+    ): ConfigDelegate<T> {
         if (path != null) require(path.isNotEmpty()) { "`path` can not be empty!" }
         return ConfigDelegate(prefix, group, path, default, type)
     }
