@@ -1,6 +1,6 @@
 name: discord-auth
 version: '1.0'
-main: app.ask4fusora.mc.discordAuth.DiscordAuth
+main: app.ask4fusora.mc.discordauth.DiscordAuth
 api-version: '1.21'
 prefix: discord-auth
 load: STARTUP
