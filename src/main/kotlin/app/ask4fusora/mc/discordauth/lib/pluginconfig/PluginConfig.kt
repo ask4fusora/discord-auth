@@ -27,7 +27,7 @@ abstract class PluginConfig<P : JavaPlugin>(
     }
 
     private fun makeFile() {
-        if (!file.exists()) return
+        if (file.exists()) return
 
         if (plugin.getResource(fileName) != null) {
             plugin.saveResource(fileName, false)
