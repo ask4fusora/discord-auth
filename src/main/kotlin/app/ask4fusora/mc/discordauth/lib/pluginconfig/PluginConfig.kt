@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.IOException
+import java.util.logging.Level
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -93,10 +94,11 @@ abstract class PluginConfig<P : JavaPlugin>(
             try {
                 thisRef.config.save(thisRef.file)
             } catch (e: IOException) {
-                thisRef.plugin.logger.severe("Could not save config file '${thisRef.fileName}'!")
-                thisRef.plugin.logger.severe("Failed to save setting '$path'!")
-
-                e.printStackTrace()
+                thisRef.plugin.logger.log(
+                    Level.SEVERE,
+                    "Could not save config file '${thisRef.fileName}' path '${path}'!",
+                    e
+                )
             }
         }
 
